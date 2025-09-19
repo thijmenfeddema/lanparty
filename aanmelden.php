@@ -1,3 +1,6 @@
+<?php
+include 'DBConnection.php';
+?>
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -17,16 +20,10 @@
         <div class="w-[90%] lg:w-1/2 lg:max-w-lg bg-white/60 backdrop-blur-sm rounded-xl shadow-lg p-6 sm:p-10 flex flex-col lg:flex-1">
             <h2 class="text-2xl sm:text-3xl font-semibold text-center mb-6 sm:mb-8">Lan-Party</h2>
             <form class="space-y-4 sm:space-y-6 flex flex-col">
-                <!-- Voornaam -->
+                <!-- naam -->
                 <div>
-                    <label for="voornaam" class="block text-sm font-medium mb-1">Voornaam</label>
-                    <input type="text" id="voornaam" name="voornaam" class="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-red-400 text-sm sm:text-base">
-                </div>
-
-                <!-- Achternaam -->
-                <div>
-                    <label for="achternaam" class="block text-sm font-medium mb-1">Achternaam</label>
-                    <input type="text" id="achternaam" name="achternaam" class="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-red-400 text-sm sm:text-base">
+                    <label for="name" class="block text-sm font-medium mb-1">naam</label>
+                    <input type="text" id="name" name="name" class="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-red-400 text-sm sm:text-base">
                 </div>
 
                 <!-- Email -->
@@ -37,8 +34,8 @@
 
                 <!-- Klas -->
                 <div>
-                    <label for="klas" class="block text-sm font-medium mb-1">Klas</label>
-                    <select id="klas" name="klas" class="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-red-400 text-sm sm:text-base">
+                    <label for="group" class="block text-sm font-medium mb-1">Klas</label>
+                    <select id="group" name="group" class="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-red-400 text-sm sm:text-base">
                         <option value="">Selecteer Klas</option>
                         <option value="1A">1A</option>
                         <option value="1B">1B</option>
