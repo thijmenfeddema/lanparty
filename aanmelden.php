@@ -1,5 +1,37 @@
 <?php
 include 'DBConnection.php';
+$message = "";
+$message_type = "";
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $name = trim($_POST['name'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $group = trim($_POST['group'] ?? '');
+
+    if ($name === "" || $email === "" || $group === "") {
+        $message = "Vul je naam, e-mail en klas in.";
+        $message_type = "error";
+    } else {
+        try {
+            $stmt = $conn->prepare("INSERT INTO participants (Name, Email, `Group`) VALUES (:name, :email, :group)");
+            $stmt->bindParam(':name', $name);
+            $stmt->bindParam(':email', $email);
+            $stmt->bindParam(':group', $group);
+            $stmt->execute();
+
+            $message = "Je registratie is succesvol!";
+            $message_type = "success";
+        } catch (PDOException $e) {
+            if ($e->getCode() == 23000) {
+                $message = "Dit e-mailadres is al geregistreerd.";
+                $message_type = "error";
+            } else {
+                $message = "Er is een fout opgetreden: " . $e->getMessage();
+                $message_type = "error";
+            }
+        }
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="nl">
@@ -14,28 +46,32 @@ include 'DBConnection.php';
         Admin
     </div>
 
-    <!-- Main container -->
     <div class="relative flex flex-col lg:flex-row items-center lg:items-stretch justify-center min-h-screen px-4 sm:px-6 py-8 lg:space-x-8 space-y-6 lg:space-y-0">
         <!-- Formulier -->
         <div class="w-[90%] lg:w-1/2 lg:max-w-lg bg-white/60 backdrop-blur-sm rounded-xl shadow-lg p-6 sm:p-10 flex flex-col lg:flex-1">
             <h2 class="text-2xl sm:text-3xl font-semibold text-center mb-6 sm:mb-8">Lan-Party</h2>
-            <form class="space-y-4 sm:space-y-6 flex flex-col">
-                <!-- naam -->
+
+            <!-- Bericht tonen -->
+            <?php if($message !== ""): ?>
+                <div class="mb-4 p-3 rounded-md text-center <?php echo $message_type === 'error' ? 'bg-red-500 text-white' : 'bg-green-500 text-white'; ?>">
+                    <?php echo htmlspecialchars($message); ?>
+                </div>
+            <?php endif; ?>
+
+            <form method="POST" action="aanmelden.php" class="space-y-4 sm:space-y-6 flex flex-col">
                 <div>
-                    <label for="name" class="block text-sm font-medium mb-1">naam</label>
-                    <input type="text" id="name" name="name" class="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-red-400 text-sm sm:text-base">
+                    <label for="name" class="block text-sm font-medium mb-1">Naam</label>
+                    <input type="text" id="name" name="name" class="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-red-400 text-sm sm:text-base" required>
                 </div>
 
-                <!-- Email -->
                 <div>
                     <label for="email" class="block text-sm font-medium mb-1">Email</label>
-                    <input type="email" id="email" name="email" class="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-red-400 text-sm sm:text-base">
+                    <input type="email" id="email" name="email" class="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-red-400 text-sm sm:text-base" required>
                 </div>
 
-                <!-- Klas -->
                 <div>
                     <label for="group" class="block text-sm font-medium mb-1">Klas</label>
-                    <select id="group" name="group" class="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-red-400 text-sm sm:text-base">
+                    <select id="group" name="group" class="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-red-400 text-sm sm:text-base" required>
                         <option value="">Selecteer Klas</option>
                         <option value="1A">1A</option>
                         <option value="1B">1B</option>
@@ -44,7 +80,6 @@ include 'DBConnection.php';
                     </select>
                 </div>
 
-                <!-- Button -->
                 <button type="submit" class="w-full bg-red-400 text-white py-2 rounded-md shadow-md hover:bg-red-500 transition text-sm sm:text-base mt-auto">
                     Volgende
                 </button>
