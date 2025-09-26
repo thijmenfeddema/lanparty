@@ -1,6 +1,4 @@
 <?php
-session_start();
-
 $host = "localhost";
 $dbname = "lanparty";
 $username = "root";

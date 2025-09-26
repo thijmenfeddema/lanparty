@@ -1,4 +1,5 @@
 <?php
+session_start(); // start de sessie
 include 'DBConnection.php';
 $message = "";
 $message_type = "";
@@ -19,12 +20,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->bindParam(':group', $group);
             $stmt->execute();
 
+            // Haal de laatst toegevoegde participant ID op
+            $participant_id = $conn->lastInsertId();
+            $_SESSION['participant_id'] = $participant_id; // opslaan in sessie
+
             $message = "Je registratie is succesvol!";
             $message_type = "success";
+
+            // Doorsturen naar tournament pagina
+            header('Location: toernooiaanmeld.php');
+            exit;
+
         } catch (PDOException $e) {
             if ($e->getCode() == 23000) {
-                $message = "Dit e-mailadres is al geregistreerd.";
+                // Als e-mail al bestaat, haal participant ID op
+                $stmt = $conn->prepare("SELECT Participant_id FROM participants WHERE Email = :email");
+                $stmt->execute(['email' => $email]);
+                $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                $_SESSION['participant_id'] = $row['Participant_id'];
+
+                $message = "Dit e-mailadres is al geregistreerd!";
                 $message_type = "error";
+
+                // Doorsturen naar tournament pagina
+                header('Location: toernooiaanmeld.php');
+                exit;
             } else {
                 $message = "Er is een fout opgetreden: " . $e->getMessage();
                 $message_type = "error";
@@ -58,7 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             <?php endif; ?>
 
-            <form method="POST" action="aanmelden.php" class="space-y-4 sm:space-y-6 flex flex-col">
+            <form method="POST" action="index.php" class="space-y-4 sm:space-y-6 flex flex-col">
                 <div>
                     <label for="name" class="block text-sm font-medium mb-1">Naam</label>
                     <input type="text" id="name" name="name" class="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-red-400 text-sm sm:text-base" required>
